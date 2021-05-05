@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: mastercard-payment-gateway
+
+mastercard:
+  gateway:
+    version: "59"
+    base-url: "https://test-gateway.mastercard.com"
+    merchant: "INVL33120005"
+    username: "merchant.${mastercard.gateway.merchant}"
+    password: "75f62627417ab8361decdc4a8d3601ec"
+    rest-api: "${mastercard.gateway.base-url}/api/rest/version/${mastercard.gateway.version}/merchant/${mastercard.gateway.merchant}"
