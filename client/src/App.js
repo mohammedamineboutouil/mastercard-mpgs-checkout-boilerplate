@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import "./App.css";
 
-const {REACT_APP_MERCHANT_ID, REACT_APP_MPGS_BASE_URL, REACT_APP_SERVER_URL} = process.env;
+const {REACT_APP_MPGS_MERCHANT_ID, REACT_APP_MPGS_BASE_URL, REACT_APP_SERVER_URL} = process.env;
 
-const MASTER_CARD_CHECKOUT_JS_SRC = `${REACT_APP_MPGS_BASE_URL}/checkout/version/59/checkout.js`;
+const MASTER_CARD_CHECKOUT_JS_SRC = `${REACT_APP_MPGS_BASE_URL}/checkout/version/61/checkout.js`;
 const MPGS_TIMEOUT = 5000;
 
 const onScriptLoad = ({initialized, sessionId}) => {
@@ -13,13 +13,13 @@ const onScriptLoad = ({initialized, sessionId}) => {
     if (!Checkout) {
         return;
     }
+
     Checkout.configure({
         session: {
             id: sessionId,
         },
-        merchant: REACT_APP_MERCHANT_ID,
+        merchant: REACT_APP_MPGS_MERCHANT_ID,
         interaction: {
-            operation: "PURCHASE",
             merchant: {
                 name: "Test merchant",
                 address: {
@@ -29,14 +29,14 @@ const onScriptLoad = ({initialized, sessionId}) => {
                 email: "support@test.com",
                 phone: "+2348126837629",
             },
-            theme: "default",
+            locale: 'en_US',
             displayControl: {
-                billingAddress: "HIDE",
-                paymentConfirmation: "HIDE",
-                orderSummary: "HIDE",
-                shipping: "HIDE",
-            },
-        },
+                billingAddress: 'HIDE',
+                paymentConfirmation: 'HIDE',
+                orderSummary: 'HIDE',
+                shipping: 'HIDE'
+            }
+        }
     });
     initialized();
 };
@@ -44,8 +44,9 @@ const onScriptLoad = ({initialized, sessionId}) => {
 const loadCallbacks = () => {
     const script = document.createElement("script");
     const code = `
-            function errorCallback(error) {}
             function cancelCallback() {}
+            function timeoutCallback() {}
+            function errorCallback(error) {}
             function completeCallback(resultIndicator, sessionVersion) {}
         `;
     script.type = "text/javascript";
@@ -81,16 +82,18 @@ const loadScript = async () => {
 
         const script = document.createElement("script");
         script.src = MASTER_CARD_CHECKOUT_JS_SRC;
+
         script.async = true;
         script.onerror = reject;
 
+        script["data-error"] = "errorCallback";
         script["data-cancel"] = "cancelCallback";
         script["data-complete"] = "completeCallback";
-        script["data-error"] = "errorCallback";
+        script["data-timeout"] = "timeoutCallback";
 
         script.onload = async () => {
             await axios
-                .post(`${REACT_APP_SERVER_URL}/payment/checkout`, {cost: 10.0})
+                .post(`${REACT_APP_SERVER_URL}/payment/checkout`, {cost: 20})
                 .then(async (res) => {
                     const {
                         session: {id},
@@ -116,7 +119,7 @@ const App = () => {
         setInitializing(true);
         loadScript()
             .then(() => setInitializing(false))
-            .catch(() => console.error("CANT NOT LOAD MPGS"));
+            .catch(() => console.warn("CANT NOT LOAD MASTERCARD PAYMENT"));
     }, []);
 
     (() => {
@@ -126,6 +129,9 @@ const App = () => {
         };
         window.cancelCallback = () => {
             console.log("Payment cancelled");
+        };
+        window.timeoutCallback = () => {
+            console.log("Payment timeout");
         };
         window.completeCallback = (resultIndicator, sessionVersion) => {
             console.log(resultIndicator, sessionVersion);

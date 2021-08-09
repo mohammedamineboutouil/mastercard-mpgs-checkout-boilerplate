@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
-@FeignClient(name = "mpgs-checkout",
+@FeignClient(
+        name = "mpgs-checkout",
         url = "${mastercard.gateway.rest-api}",
         configuration = MpgsClientConfiguration.class
 )

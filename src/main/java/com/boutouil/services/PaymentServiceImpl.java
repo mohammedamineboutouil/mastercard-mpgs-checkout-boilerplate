@@ -22,6 +22,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         final var orderId = Utils.createUniqueId(ORDER);
 
+
         final var payload = CheckoutPayload.builder()
                 .orderId(orderId)
                 .apiOperation(MpgsApiOperation.CREATE_CHECKOUT_SESSION)
