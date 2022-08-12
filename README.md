@@ -1,4 +1,5 @@
-# Mastercard payment gateway Spring Boot And ReactJs implementation
+# Mastercard MPGS checkout payment Template 
+## With Spring Boot And ReactJs
 
 ## Available Scripts
 
