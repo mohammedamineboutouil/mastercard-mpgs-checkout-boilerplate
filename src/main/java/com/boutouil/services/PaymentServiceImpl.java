@@ -34,8 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (Objects.isNull(checkoutSession)
                 || !checkoutSession.getResult().equals("SUCCESS")
-                || Objects.isNull(checkoutSession.getSuccessIndicator())
-        )
+                || Objects.isNull(checkoutSession.getSuccessIndicator()))
             return null;
         return checkoutSession;
     }
