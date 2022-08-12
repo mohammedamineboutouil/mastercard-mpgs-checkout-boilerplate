@@ -1,4 +1,4 @@
-# Mastercard MPGS checkout payment Template 
+# Mastercard MPGS Checkout Template 
 ## With Spring Boot And ReactJs
 
 ## Available Scripts
